@@ -24,4 +24,3 @@ computed solution graph with the other colonies.
 ## Sample Solution
 
 ![Example solution image](https://raw.github.com/hakuch/TravellingAnts/master/SampleSolution.png)
-
