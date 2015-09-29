@@ -1,26 +1,32 @@
 TravellingAnts
 ==============
 
-TravellingAnts is an experimental implementation of the Ant Colony
-Optimization algorithm for solving the travelling salesmen problem.
+TravellingAnts is an implementation of the Ant Colony metaheuristic optimization algorithm (specifically, Ant System) for solving the travelling salesmen problem.
+
+The repository includes a library for solving arbitrary graphs and also includes a specific example.
+
+The code is intended to be clear and modular. Ants are launched concurrently to improve execution speed. The solver provides call-backs for listening to the running computation rather than hard-coding loggers.
+
+## Sample run
+
+![Sample solution](https://raw.github.com/hakuch/TravellingAnts/master/sample/sample.png)
+
+![Sample iterations](https://raw.github.com/hakuch/TravellingAnts/master/sample/sample-iterations.png)
 
 ## Use
 
-TravellingAnts requires:
-* Python, version 2
-* the Graphviz program
-* The [PyGraphviz](http://pygraphviz.github.io/) library 
+TravellingAnts is written in Scala. It requires that sbt is installed.
 
-Once these dependencies are satisfied, just execute the script with
-Python, and the computed traversal of the graph will be output as a
-postscript file.
+To execute the solver on the example solution and save the solution in the DOT format, execute:
 
-The algorithm has a number of adjustable parameters which impact the
-computed solution in non-obvious ways. Additionally, the algorithm can
-optionally be run cooperatively. In this scheme, multiple ant colonies
-tackle the problem in parallel, and share random edges of their
-computed solution graph with the other colonies.
+```bash
+$ sbt --warn run > output.dot
+```
 
-## Sample Solution
+Intermediate progress is printed to the standard error device (`stderr`) and also to a log file (`travelling-ants.log`) in comma-separated value (CSV) format suitable for analysis.
 
-![Example solution image](https://raw.github.com/hakuch/TravellingAnts/master/SampleSolution.png)
+To produce a visual image of the resulting solution, you can use `neato` from the grapviz suite of programs:
+
+```bash
+$ neato -Tpng output.dot > output.png
+```
