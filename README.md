@@ -9,9 +9,13 @@ The code is intended to be clear and modular. Ants are launched concurrently to 
 
 ## Sample run
 
-![Sample solution](https://raw.github.com/hakuch/TravellingAnts/master/sample/sample.png)
+A comparison of the mean cost of each ant's solution per iteration to the overal cumulative best solution as the algorithm progress:
 
 ![Sample iterations](https://raw.github.com/hakuch/TravellingAnts/master/sample/sample-iterations.png)
+
+The best solution from the run above:
+
+![Sample solution](https://raw.github.com/hakuch/TravellingAnts/master/sample/sample.png)
 
 ## Use
 
