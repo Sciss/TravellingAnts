@@ -87,7 +87,6 @@ abstract class Ant {
     val (items, weights) = choices.unzip
     val cumulativeWeights = items.zip(weights.scanLeft(0.0)(_ + _).tail)
     val x = Random.nextDouble() * weights.sum
-
     cumulativeWeights.find { case (_, bound) => bound > x }.get._1
   }
 
