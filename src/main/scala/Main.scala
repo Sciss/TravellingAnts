@@ -61,7 +61,10 @@ object App {
   def main(args: Array[String]): Unit = {
     val log = prepareLog("travelling-ants.log")
 
-    val lookup = Nodes.toMap.apply _
+    val lookup = {
+      val nodeMap = Nodes.toMap
+      (n: Int) => nodeMap.apply(n)
+    }
 
     val graph = ConnectedGraph(Nodes.map(_._1)) { (a, b) =>
       Point.distance(lookup(a), lookup(b))
