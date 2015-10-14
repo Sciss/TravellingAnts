@@ -29,7 +29,9 @@ abstract class ConnectedGraph[A, W] private (val edges: Map[(A, A), W]) {
   }
 
   def transform[V](f: W => V): ConnectedGraph[A, V] = {
-    val newEdges = edges.mapValues(f)
+    // Forcing the view is required.
+    // See [[https://issues.scala-lang.org/browse/SI-4776]]
+    val newEdges = edges.mapValues(f).view.force
     new ConnectedGraph(newEdges) {}
   }
 
