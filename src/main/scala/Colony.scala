@@ -99,7 +99,7 @@ abstract class Colony(val ant: Ant) {
               newBest = c
           }
 
-          val updatedProgress = progress.copy(
+          val updatedProgress = Progress(
             graph = newGraph,
             bestSolution = newBest,
             iterationCount = progress.iterationCount + 1,
