@@ -40,7 +40,7 @@ abstract class Ant {
     var lastNode: Option[Node] = None
 
     val steps = unfold(state) { case state =>
-      if (state.remaining.size == 1) {
+      if (state.remaining.size == 0) {
         lastNode = Some(state.current)
         None
       } else {
