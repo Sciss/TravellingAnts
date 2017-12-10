@@ -15,6 +15,7 @@ All changes to the original code published under the original license  (MIT). Th
 - put code into package `de.sciss.ants`
 - abstract classes changed for final classes
 - demo app is in test sources, thus run `sbt test:run` instead of `sbt run`s
+- bug fixes
 - publish as library (see section 'linking')
 
 ## linking
@@ -23,7 +24,7 @@ To link to this library:
 
     "de.sciss" %% "travelling-ants" % v
 
-The current version `v` is `"0.1.0"`.
+The current version `v` is `"0.1.1"`.
 
 ## building
 

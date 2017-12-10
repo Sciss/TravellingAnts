@@ -1,17 +1,22 @@
-lazy val repoName    = "TravellingAnts"
-lazy val projectName = "travelling-ants"
+lazy val repoName       = "TravellingAnts"
+lazy val projectName    = "travelling-ants"
+lazy val projectNameL   = projectName.toLowerCase
+
+lazy val projectVersion = "0.1.1"
+lazy val mimaVersion    = "0.1.0"
 
 lazy val root = project.in(file("."))
   .settings(
-    name                := projectName,
-    organization        := "de.sciss",
-    description         := "Ant colony optimization for travelling salesman problem",
-    licenses            := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
-    homepage            := Some(url(s"https://github.com/Sciss/$repoName")),
-    version             := "0.1.0",
-    scalaVersion        := "2.12.4",
-    crossScalaVersions  := Seq("2.12.4", "2.11.12"),
-    scalacOptions       ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture", "-encoding", "utf8", "-Xlint")
+    name                  := projectName,
+    organization          := "de.sciss",
+    description           := "Ant colony optimization for travelling salesman problem",
+    licenses              := Seq("MIT" -> url("https://opensource.org/licenses/MIT")),
+    homepage              := Some(url(s"https://github.com/Sciss/$repoName")),
+    version               := projectVersion,
+    mimaPreviousArtifacts := Set("de.sciss" %% projectNameL % mimaVersion),
+    scalaVersion          := "2.12.4",
+    crossScalaVersions    := Seq("2.12.4", "2.11.12"),
+    scalacOptions         ++= Seq("-deprecation", "-unchecked", "-feature", "-Xfuture", "-encoding", "utf8", "-Xlint")
   )
   .settings(publishSettings)
 

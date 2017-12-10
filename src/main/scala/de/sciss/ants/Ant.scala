@@ -65,16 +65,21 @@ final class Ant[V](val alpha: Double = 0.5, val beta: Double = 1.2) {
   private def travelProbabilities(state: State, graph: ConnectedGraph[V, Weight]): List[(V, Double)] = {
     // I think this was a bug in the original code - `remaining` is a Set, so
     // it was mapping to a possibly smaller Set of costs; we insert an iterator
-    val normalizationFactor = state.remaining.iterator.map { node =>
+    val norm0 = state.remaining.iterator.map { node =>
       val weight = graph.weight(state.current, node)
-      math.pow(weight.pheromone, alpha) / math.pow(weight.distance, beta)
+      val a = math.pow(weight.pheromone, alpha)
+      val b = math.pow(weight.distance , beta )
+      if (a == 0.0 || b == 0.0) 0.0 else a / b
     }.sum
+
+    val norm = if (norm0 == 0.0) 1.0 else norm0   // avoid division by zero
 
     state.remaining.toList.map { node =>
       val weight  = graph.weight(state.current, node)
       val a       = math.pow(weight.pheromone, alpha)
-      val b       = 1.0 / math.pow(weight.distance, beta)
-      (node, (a * b) / normalizationFactor)
+      val b       = math.pow(weight.distance , beta )
+      val div     = if (a == 0.0 || b == 0.0) 0.0 else (a / b) / norm
+      (node, div)
     }
   }
 
@@ -86,8 +91,11 @@ final class Ant[V](val alpha: Double = 0.5, val beta: Double = 1.2) {
    */
   private def weightedRandomChoice[A](choices: Seq[(A, Double)]): A = {
     val (items, weights)  = choices.unzip
-    val cumulativeWeights = items.zip(weights.scanLeft(0.0)(_ + _).tail)
-    val x                 = Random.nextDouble() * weights.sum
-    cumulativeWeights.find { case (_, bound) => bound > x }.get._1
+    val weightsCum        = weights.scanLeft(0.0)(_ + _).tail
+    val itemsCum          = items.zip(weightsCum)
+    val weightsSum        = weightsCum.last
+    val x                 = Random.nextDouble() * weightsSum
+    val opt               = itemsCum.find { case (_, bound) => bound >= x }
+    opt.getOrElse(itemsCum.last)._1
   }
 }
