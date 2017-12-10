@@ -6,3 +6,4 @@ project/*
 target
 
 travelling-ants.log
+/.idea

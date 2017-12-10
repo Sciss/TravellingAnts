@@ -1,55 +1,67 @@
+package de.sciss.ants
+
 import scala.util.Random
+import scala.collection.breakOut
+import scala.collection.immutable.{IndexedSeq => Vec}
 
 /**
- * Undirected graph where every node is connected to every other node.
- *
- * Graphs are immutable and created via [[ConnectedGraph.apply]] with an
- * edge-generating function.
- */
-abstract class ConnectedGraph[A, W] private (val edges: Map[(A, A), W]) {
-  lazy val nodes: List[A] =
-    edges.keys.flatMap { case (s, d) => List(s, d) }.toList
+  * Undirected graph where every node is connected to every other node.
+  *
+  * Graphs are immutable and created via [[ConnectedGraph#apply]] with an
+  * edge-generating function.
+  */
+final class ConnectedGraph[A, W] private (val edges: Map[(A, A), W]) {
+  lazy val nodeSet: Set[A] = {
+    /** Warning: this relies on a `flatMap` to a _set_, i.e. distinct output.
+      * So don't use `keysIterator.flatMap` or `flatMap (breakOut)`!
+      */
+    val keys = edges.keySet
+    keys.flatMap { case (s, d) => List(s, d) }
+  }
+
+  lazy val nodeSeq: Vec[A] = nodeSet.toVector
 
   def weight(source: A, dest: A): W =
     edges((source, dest))
 
   def mapEdge(source: A, dest: A)(f: W => W): ConnectedGraph[A, W] = {
     val v = f(edges((source, dest)))
-    new ConnectedGraph(edges.updated((source, dest), v)) {}
+    new ConnectedGraph(edges.updated((source, dest), v))
   }
 
   def map[B](f: A => B): ConnectedGraph[B, W] = {
-    val mappedNodes = nodes.map { case a => a -> f(a) }.toMap
+    val mappedNodes: Map[A, B] = nodeSeq.map(a => a -> f(a))(breakOut)
 
     val newEdges = edges.map { case ((source, dest), w) =>
       ((mappedNodes(source), mappedNodes(dest)), w)
     }
 
-    new ConnectedGraph(newEdges) {}
+    new ConnectedGraph(newEdges)
   }
 
   def transform[V](f: W => V): ConnectedGraph[A, V] = {
     // Forcing the view is required.
     // See [[https://issues.scala-lang.org/browse/SI-4776]]
-    val newEdges = edges.mapValues(f).view.force
-    new ConnectedGraph(newEdges) {}
+//    val newEdges = edges.mapValues(f).view.force
+    val newEdges = edges.map { case (k, v) => k -> f(v) } // mapValues(f).view.force
+    new ConnectedGraph(newEdges)
   }
 
   def randomNode(): A =
-    nodes(Random.nextInt(nodes.size))
+    nodeSeq(Random.nextInt(nodeSeq.size))
 }
 
 object ConnectedGraph {
   def empty[A, W]: ConnectedGraph[A, W] =
-    new ConnectedGraph(Map.empty[(A, A), W]) {}
+    new ConnectedGraph(Map.empty[(A, A), W])
 
   /**
-   * Create a new graph.
-   *
-   * Edges between nodes are specified with the edge-generating function `f`.
-   *
-   * Graphs must consist of at least two nodes, or else they are empty.
-   */
+    * Creates a new graph.
+    *
+    * Edges between nodes are specified with the edge-generating function `f`.
+    *
+    * Graphs must consist of at least two nodes, or else they are empty.
+    */
   def apply[A, W](es: Seq[A])(f: (A, A) => W): ConnectedGraph[A, W] = {
     es match {
       case Seq() | Seq(_) => empty
@@ -67,7 +79,7 @@ object ConnectedGraph {
           allEdges ++ newEdges
         }
 
-        new ConnectedGraph(edges) {}
+        new ConnectedGraph(edges)
     }
   }
 }
@@ -75,7 +87,7 @@ object ConnectedGraph {
 object DirectedGraph {
 
   /**
-   * Format a simple representation of a directed graph in the DOT format.
+   * Formats a simple representation of a directed graph in the DOT format.
    *
    * The DOT format is described at
    * [[https://en.wikipedia.org/wiki/DOT_(graph_description_language)]].
@@ -84,9 +96,7 @@ object DirectedGraph {
    * exported graph. These attributes are set via an optional
    * attribute-generating function.
    */
-  def formatAsDot[A](graph: Set[(A, A)], attr: Option[A => Map[String, String]] = None)
-      : String =
-  {
+  def formatAsDot[A](graph: Set[(A, A)], attr: Option[A => Map[String, String]] = None): String = {
     val output = new StringBuilder()
 
     output.append(s"digraph exported {\n")
